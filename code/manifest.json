@@ -3,7 +3,7 @@
   "name": "Letterboxd Solipsism",
   "version": "0.0.1",
 
-  "description": "Removes ratings on film pages.",
+  "description": "Hides ratings on Letterboxd film pages.",
 
   "content_scripts": [
     {

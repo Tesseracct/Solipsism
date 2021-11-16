@@ -1,8 +1,16 @@
-document.body.style.border = "5px solid red";
+document.getElementsByClassName("sidebar").item(0).style.display = "none";
 
 
-//document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "none";
 
-setTimeout(function(){
+const targetNode = document.getElementsByClassName("sidebar").item(0);
+const config = { attributes: true, childList: true, subtree: true };
+const callback = function(mutationsList, observer) {
     document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "none";
-}, 1)
+    document.getElementsByClassName("sidebar").item(0).style.display = "";
+    observer.disconnect()
+}
+
+const observer = new MutationObserver(callback);
+observer.observe(targetNode, config);
+
+
