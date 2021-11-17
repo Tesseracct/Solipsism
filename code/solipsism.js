@@ -5,18 +5,25 @@ const targetNode = document.getElementsByClassName("sidebar").item(0);
 const config = { attributes: true, childList: true, subtree: true };
 
 const callback = function(mutationsList, observer) {
-    const watchedElement = document.getElementsByClassName("action-large -watch").item(0)
-    const watchedText = watchedElement.textContent
+    let watchedElement = document.getElementsByClassName("action-large -watch").item(0)
+    let watchedText = watchedElement.textContent
 
     if(!(watchedText === "logged" || watchedText === "reviewed")){
-        document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "none";
+        // "Watched" and "Watch" tags have a different structure than "Logged" and "Reviewed"
+        // and have to be handled separately
+        watchedElement = watchedElement.children.item(0).childNodes.item(0).childNodes.item(0)
+        watchedText = watchedElement.textContent
+
+        if(!(watchedText === "Watched")){
+            document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "none";
+        }
     }
+
 
     document.getElementsByClassName("sidebar").item(0).style.display = "block";
     observer.disconnect()
 }
 
+
 const observer = new MutationObserver(callback);
 observer.observe(targetNode, config);
-
-
