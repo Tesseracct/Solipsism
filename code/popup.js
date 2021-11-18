@@ -1,9 +1,7 @@
-let hideRatings = false
-browser.storage.local.set({"hideRatings": hideRatings})
-
-async function getValue() {
-    let temp = await browser.storage.local.get("hideRatings")
-    console.log(temp.hideRatings)
+async function getActivated() {
+    let temp = await browser.storage.local.get("activated")
+    const active = temp.activated
+    browser.storage.local.set({"activated": !active})
 }
 
-getValue()
+getActivated()
