@@ -1,6 +1,5 @@
 document.getElementsByClassName("sidebar").item(0).style.display = "none";
 
-
 const targetNode = document.getElementsByClassName("sidebar").item(0);
 const config = { attributes: true, childList: true, subtree: true };
 
@@ -27,3 +26,9 @@ const callback = function(mutationsList, observer) {
 
 const observer = new MutationObserver(callback);
 observer.observe(targetNode, config);
+
+
+
+// TODO: In manifest: icon accessibility, refer to firefox icon style guide
+// TODO: Themed Icons for browser action
+// TODO: Show ratings dynamically when a film has been watched
