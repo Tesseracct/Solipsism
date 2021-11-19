@@ -1,2 +1,5 @@
 # Ignore WebStorm specific files
 *idea/
+
+# Ignore icons
+*code/icons/
