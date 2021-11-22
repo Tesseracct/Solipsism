@@ -1,5 +1,12 @@
-document.getElementsByClassName("sidebar").item(0).style.display = "none";
+const sideBar = document.getElementsByClassName("sidebar").item(0)
+const reviews = document.getElementsByClassName("film-recent-reviews").item(0)
+const column = document.getElementsByClassName("col-17").item(0)
+column.style.display = "none"
+sideBar.style.display = "none"
+reviews.style.display = "none"
 let active = true
+let hideReviews = true
+let hideFriends = true
 
 
 async function checkActivated() {
@@ -7,15 +14,37 @@ async function checkActivated() {
     active = temp.activated
 
     if(!active){
-        document.getElementsByClassName("sidebar").item(0).style.display = "block";
+        column.style.display = "block"
+        sideBar.style.display = "block"
+        reviews.style.display = "block"
         const chart = document.getElementsByClassName("section ratings-histogram-chart").item(0)
         // Checking for null to prevent error messages
         if(chart !== null){
             chart.style.display = "block"
         }
     }
+    else {
+        checkSettings()
+    }
 }
 checkActivated()
+
+
+async function checkSettings() {
+    let temp = await browser.storage.local.get("hideReviews")
+    hideReviews = temp.hideReviews
+    console.log("test")
+    temp = await browser.storage.local.get("hideFriends")
+    hideFriends = temp.hideFriends
+    console.log(hideFriends)
+
+    if(!hideReviews){
+        reviews.style.display = "block"
+    }
+    if(!hideFriends){
+         column.style.display = "block"
+    }
+}
 
 
 function hasBeenSeen(){
@@ -28,25 +57,55 @@ function hasBeenSeen(){
         watchedElement = watchedElement.children.item(0).childNodes.item(0).childNodes.item(0)
         watchedText = watchedElement.textContent
 
-        return watchedText === "Watched";
+        return watchedText === "Watched"
     }
     else {
         return true
     }
 }
 
-const callback = function(mutationsList, observer) {
-    if(!hasBeenSeen() && active){
-        document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "none";
+function hideOrListenFriends(){
+    const friends = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch").item(0)
+
+    if(friends !== null){
+        friends.style.display = "none"
+        column.style.display = "block"
+    }
+    else { // Just in case friends hasn't loaded yet
+        const columnObserver = new MutationObserver((e, a) => {
+            const friends = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch").item(0)
+            if(friends !== null){
+                friends.style.display = "none"
+                column.style.display = "block"
+                columnObserver.disconnect()
+            }
+        })
+        columnObserver.observe(targetNode, config)
+    }
+}
+
+const hideElements = function(mutationsList, observer) {
+    if(hasBeenSeen()){
+        reviews.style.display = "block"
+        column.style.display = "block"
+    }
+    else {
+        if(active){
+            document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "none"
+            if(hideFriends){
+                hideOrListenFriends()
+            }
+        }
     }
 
-    document.getElementsByClassName("sidebar").item(0).style.display = "block";
+    sideBar.style.display = "block"
     observer.disconnect()
 }
 
 
-const targetNode = document.getElementsByClassName("sidebar").item(0);
-const config = { attributes: true, childList: true, subtree: true };
+const targetNode = sideBar
+const config = { attributes: true, childList: true, subtree: true }
 
-const observer = new MutationObserver(callback);
-observer.observe(targetNode, config);
+
+const sidebarObserver = new MutationObserver(hideElements)
+sidebarObserver.observe(targetNode,config)

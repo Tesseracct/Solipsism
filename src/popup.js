@@ -4,22 +4,54 @@ async function switch_on_off() {
     browser.storage.local.set({"activated": !active})
 }
 
+async function toggleReviews(){
+    let temp = await browser.storage.local.get("hideReviews")
+    const hideReviews = temp.hideReviews
+    browser.storage.local.set({"hideReviews": !hideReviews})
+}
+async function toggleFriends(){
+    let temp = await browser.storage.local.get("hideFriends")
+    const hideFriends = temp.hideFriends
+    browser.storage.local.set({"hideFriends": !hideFriends})
+}
+
+async function initHideReviewsSwitch(){
+    let temp = await browser.storage.local.get("hideReviews")
+    if (temp.hideReviews) {
+        const reviewSwitch = document.getElementById("hideReviews")
+        reviewSwitch.checked = true
+    }
+}
+async function initHideFriendsSwitch(){
+    let temp = await browser.storage.local.get("hideFriends")
+    if (temp.hideFriends) {
+        const hideFriends = document.getElementById("hideFriends")
+        hideFriends.checked = true
+    }
+}
+
 async function initializeButton() {
     let temp = await browser.storage.local.get("activated")
     const active = temp.activated
 
     const styleElement = document.getElementById("on_off_style")
-    const optionsButton = document.getElementById("optionsButton")
+    const enableDisableButton = document.getElementById("enableDisableButton")
     if(active) {
         styleElement.firstChild.nodeValue = ".st0{fill:none;stroke:#40BCF4;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;} \n"
             + ".st1{fill:none;stroke:#00E054;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;}"
-        optionsButton.title = "Disable Add-On"
+        enableDisableButton.title = "Disable Add-On"
     }
     else {
         styleElement.firstChild.nodeValue = ".st0{fill:none;stroke:#808080;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;} \n"
             + ".st1{fill:none;stroke:#FF8000;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;}"
-        optionsButton.title = "Enable Add-On"
+        enableDisableButton.title = "Enable Add-On"
     }
+}
+
+function initializePopup(){
+    initializeButton()
+    initHideReviewsSwitch()
+    initHideFriendsSwitch()
 }
 
 
@@ -37,18 +69,18 @@ function swtch() {
     let back = ";stroke-width:6;stroke-linecap:round;stroke-linejoin:round;}"
     let colourValue = nodeText.match(new RegExp("#([A-F]|[0-9])*"))[0]
 
-    const optionsButton = document.getElementById("optionsButton")
+    const enableDisableButton = document.getElementById("enableDisableButton")
 
     switch(colourValue){
         case "#40BCF4":
             // Add-On is being disabled
             colourValue = "#808080"
-            optionsButton.title = "Enable Add-On"
+            enableDisableButton.title = "Enable Add-On"
             break
         case "#808080":
             // Add-On is being enabled
             colourValue = "#40BCF4"
-            optionsButton.title = "Disable Add-On"
+            enableDisableButton.title = "Disable Add-On"
             break
         default:
             console.log("Unknown Colour Value")
@@ -82,8 +114,13 @@ function swtch() {
 }
 
 
-initializeButton()
 
-const eventListener = document.getElementById("optionsButton")
-eventListener.addEventListener("click", swtch)
+initializePopup()
+
+const enableDisableListener = document.getElementById("enableDisableButton")
+const hideReviewsListener = document.getElementById("hideReviews")
+const hideFriendsListener = document.getElementById("hideFriends")
+enableDisableListener.addEventListener("click", swtch)
+hideReviewsListener.addEventListener("click", toggleReviews)
+hideFriendsListener.addEventListener("click", toggleFriends)
 
