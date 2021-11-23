@@ -4,6 +4,7 @@ const column = document.getElementsByClassName("col-17").item(0)
 column.style.display = "none"
 sideBar.style.display = "none"
 reviews.style.display = "none"
+let viewed = false
 let active = true
 let hideReviews = true
 let hideFriends = true
@@ -33,10 +34,8 @@ checkActivated()
 async function checkSettings() {
     let temp = await browser.storage.local.get("hideReviews")
     hideReviews = temp.hideReviews
-    console.log("test")
     temp = await browser.storage.local.get("hideFriends")
     hideFriends = temp.hideFriends
-    console.log(hideFriends)
 
     if(!hideReviews){
         reviews.style.display = "block"
@@ -66,9 +65,11 @@ function hasBeenSeen(){
 
 function hideOrListenFriends(){
     const friends = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch").item(0)
+    const friendReviews = document.getElementById("popular-reviews-with-friends")
 
     if(friends !== null){
         friends.style.display = "none"
+        friendReviews.style.display = "none"
         column.style.display = "block"
     }
     else { // Just in case friends hasn't loaded yet
@@ -76,6 +77,7 @@ function hideOrListenFriends(){
             const friends = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch").item(0)
             if(friends !== null){
                 friends.style.display = "none"
+                friendReviews.style.display = "none"
                 column.style.display = "block"
                 columnObserver.disconnect()
             }
@@ -85,7 +87,8 @@ function hideOrListenFriends(){
 }
 
 const hideElements = function(mutationsList, observer) {
-    if(hasBeenSeen()){
+    viewed = hasBeenSeen()
+    if(viewed){
         reviews.style.display = "block"
         column.style.display = "block"
     }
@@ -102,6 +105,65 @@ const hideElements = function(mutationsList, observer) {
     observer.disconnect()
 }
 
+const updateContent = function(message) {
+    if(!viewed){
+        switch(message) {
+            case "turnOff":
+                active = false
+                document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "block"
+                if(hideReviews){
+                    reviews.style.display = "block"
+                }
+                if(hideFriends){
+                    document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
+                        .item(0).style.display = "block"
+                    document.getElementById("popular-reviews-with-friends").style.display = "block"
+                }
+                break
+
+            case "turnOn":
+                active = true
+                document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "none"
+                if(hideReviews){
+                    reviews.style.display = "none"
+                }
+                if(hideFriends){
+                    document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
+                        .item(0).style.display = "none"
+                    document.getElementById("popular-reviews-with-friends").style.display = "none"
+                }
+                break
+
+            case "showReviews":
+                hideReviews = false
+                reviews.style.display = "block"
+                break
+
+            case "hideReviews":
+                hideReviews = true
+                if(active){
+                    reviews.style.display = "none"
+                }
+                break
+
+            case "showFriends":
+                hideFriends = false
+                document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
+                    .item(0).style.display = "block"
+                document.getElementById("popular-reviews-with-friends").style.display = "block"
+                break
+
+            case "hideFriends":
+                hideFriends = true
+                if(active){
+                    document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
+                        .item(0).style.display = "none"
+                    document.getElementById("popular-reviews-with-friends").style.display = "none"
+                }
+        }
+    }
+}
+
 
 const targetNode = sideBar
 const config = { attributes: true, childList: true, subtree: true }
@@ -109,3 +171,5 @@ const config = { attributes: true, childList: true, subtree: true }
 
 const sidebarObserver = new MutationObserver(hideElements)
 sidebarObserver.observe(targetNode,config)
+
+browser.runtime.onMessage.addListener(updateContent)

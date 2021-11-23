@@ -1,17 +1,35 @@
 async function switch_on_off() {
     let temp = await browser.storage.local.get("activated")
     const active = temp.activated
+    if(active) {
+        sendUpdateMessage("turnOff")
+    }
+    else {
+        sendUpdateMessage("turnOn")
+    }
     browser.storage.local.set({"activated": !active})
 }
 
 async function toggleReviews(){
     let temp = await browser.storage.local.get("hideReviews")
     const hideReviews = temp.hideReviews
+    if(hideReviews){
+        sendUpdateMessage("showReviews")
+    }
+    else {
+        sendUpdateMessage("hideReviews")
+    }
     browser.storage.local.set({"hideReviews": !hideReviews})
 }
 async function toggleFriends(){
     let temp = await browser.storage.local.get("hideFriends")
     const hideFriends = temp.hideFriends
+    if(hideFriends){
+        sendUpdateMessage("showFriends")
+    }
+    else {
+        sendUpdateMessage("hideFriends")
+    }
     browser.storage.local.set({"hideFriends": !hideFriends})
 }
 
@@ -22,12 +40,20 @@ async function initHideReviewsSwitch(){
         reviewSwitch.checked = true
     }
 }
+
 async function initHideFriendsSwitch(){
     let temp = await browser.storage.local.get("hideFriends")
     if (temp.hideFriends) {
         const hideFriends = document.getElementById("hideFriends")
         hideFriends.checked = true
     }
+}
+
+async function sendUpdateMessage(updateMessage) {
+    const activeTabs = await browser.tabs.query({url: "*://letterboxd.com/film/*"})
+    activeTabs.forEach((tab) => {
+        browser.tabs.sendMessage(tab.id, updateMessage)
+    })
 }
 
 async function initializeButton() {

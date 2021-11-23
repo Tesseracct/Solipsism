@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Letterboxd Solipsism",
-  "version": "0.0.6",
+  "version": "0.0.7",
 
   "description": "Hides ratings on Letterboxd film pages.",
 
@@ -14,7 +14,7 @@
 
   "permissions": [
     "storage",
-    "activeTab"
+    "tabs"
   ],
 
   "browser_action": {
