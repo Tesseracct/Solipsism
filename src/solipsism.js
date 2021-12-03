@@ -1,9 +1,16 @@
 const sideBar = document.getElementsByClassName("sidebar").item(0)
 const reviews = document.getElementsByClassName("film-recent-reviews").item(0)
+// const reviews = document.getElementsByClassName("film-popular-review").item(0)
 const column = document.getElementsByClassName("col-17").item(0)
+
 column.style.display = "none"
 sideBar.style.display = "none"
 reviews.style.display = "none"
+
+let recentReviews = null
+let popularReviews = null
+let friendReviews = null
+
 let viewed = false
 let active = true
 let hideReviews = true
@@ -28,7 +35,6 @@ async function checkActivated() {
         checkSettings()
     }
 }
-checkActivated()
 
 
 async function checkSettings() {
@@ -56,12 +62,16 @@ function hasBeenSeen(){
         watchedElement = watchedElement.children.item(0).childNodes.item(0).childNodes.item(0)
         watchedText = watchedElement.textContent
 
+        listenWatchedEvent()
+
         return watchedText === "Watched"
     }
     else {
+        listenWatchedEvent()
         return true
     }
 }
+
 
 function hideOrListenFriends(){
     const friends = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch").item(0)
@@ -86,6 +96,7 @@ function hideOrListenFriends(){
     }
 }
 
+
 const hideElements = function(mutationsList, observer) {
     viewed = hasBeenSeen()
     if(viewed){
@@ -104,6 +115,35 @@ const hideElements = function(mutationsList, observer) {
     sideBar.style.display = "block"
     observer.disconnect()
 }
+
+
+const listenReviews = function(mutationsList, observer) {
+    if(recentReviews === null) {recentReviews  = document.getElementById("recent-reviews")}
+    if(popularReviews === null) {popularReviews = document.getElementById("popular-reviews")}
+    if(friendReviews === null) {friendReviews = document.getElementById("popular-reviews-with-friends")}
+    if(recentReviews !== null && popularReviews !== null && friendReviews !== null) {
+        observer.disconnect()
+    }
+}
+
+
+async function listenWatchedEvent() {
+    const targetNode = document.getElementsByClassName("action-large -watch").item(0)
+    const config = { attributes: true, childList: true, subtree: true }
+
+    const watchButtonObserver = new MutationObserver((e,a) => {
+        const change = e[0].addedNodes.item(0).textContent
+        if(change === "Watched" && !viewed) {
+            updateContent("turnOff")
+            viewed = true
+        } else if (change === "Watch") {
+            viewed = false
+            updateContent("turnOn")
+        }
+    })
+    watchButtonObserver.observe(targetNode,config)
+}
+
 
 const updateContent = function(message) {
     if(!viewed){
@@ -156,8 +196,10 @@ const updateContent = function(message) {
             case "hideFriends":
                 hideFriends = true
                 if(active){
-                    document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
-                        .item(0).style.display = "none"
+                    const activityFriends = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
+                        .item(0)
+                    console.log(activityFriends)
+                    activityFriends.style.display = "none"
                     document.getElementById("popular-reviews-with-friends").style.display = "none"
                 }
         }
@@ -165,11 +207,19 @@ const updateContent = function(message) {
 }
 
 
+
+checkActivated()
+
+
 const targetNode = sideBar
 const config = { attributes: true, childList: true, subtree: true }
 
-
 const sidebarObserver = new MutationObserver(hideElements)
 sidebarObserver.observe(targetNode,config)
+
+
+const reviewsObserver = new MutationObserver(listenReviews)
+reviewsObserver.observe(reviews, config)
+
 
 browser.runtime.onMessage.addListener(updateContent)
