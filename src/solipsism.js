@@ -120,7 +120,7 @@ const listenReviews = function(mutationsList, observer) {
     if(friendReviews === null) {friendReviews = document.getElementById("popular-reviews-with-friends").getElementsByClassName("film-popular-review").item(0)}
     if(recentReviews !== null && popularReviews !== null && friendReviews !== null) {
         observer.disconnect()
-        if (active && hideReviews) {
+        if (active && hideReviews && !viewed) {
             toggleAllReviews("none")
         }
         // fHideReviews()
