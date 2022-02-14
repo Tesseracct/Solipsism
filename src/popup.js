@@ -1,4 +1,4 @@
-async function switch_on_off() {
+async function switch_on_off_storage() {
     let temp = await browser.storage.local.get("activated")
     const active = temp.activated
     if(active) {
@@ -82,28 +82,30 @@ function initializePopup(){
 
 
 function swtch() {
-    switch_on_off()
+    switch_on_off_storage()
 
     const styleElement = document.getElementById("on_off_style")
     const nodeValue = styleElement.firstChild.nodeValue
 
     // Colour values: Blue=40BCF4, Green=00E054, Orange=FF8000, Grey=808080
+
     // Switch ring colours
     let nodeText = nodeValue.match(new RegExp(".st0{([a-z]|:|#|[0-9]|[A-Z]|;|-)*}")).entries().next().value[1]
 
     let front = ".st0{fill:none;stroke:"
     let back = ";stroke-width:6;stroke-linecap:round;stroke-linejoin:round;}"
     let colourValue = nodeText.match(new RegExp("#([A-F]|[0-9])*"))[0]
+    const buttonTitle = document.getElementById("enableDisableButton").title
 
     const enableDisableButton = document.getElementById("enableDisableButton")
 
-    switch(colourValue){
-        case "#40BCF4":
+    switch(buttonTitle){
+        case "Disable Add-On":
             // Add-On is being disabled
             colourValue = "#808080"
             enableDisableButton.title = "Enable Add-On"
             break
-        case "#808080":
+        case "Enable Add-On":
             // Add-On is being enabled
             colourValue = "#40BCF4"
             enableDisableButton.title = "Disable Add-On"
@@ -122,11 +124,11 @@ function swtch() {
     back = ";stroke-width:6;stroke-linecap:round;stroke-linejoin:round;}"
     colourValue = nodeText.match(new RegExp("#([A-F]|[0-9])*"))[0]
 
-    switch(colourValue){
-        case "#00E054":
+    switch(buttonTitle){
+        case "Disable Add-On":
             colourValue = "#FF8000"
             break
-        case "#FF8000":
+        case "Enable Add-On":
             colourValue = "#00E054"
             break
         default:
