@@ -94,15 +94,6 @@ function hideOrListenFriends(){
 }
 
 
-function fHideReviews() {
-    if(hideReviews){
-        recentReviews.style.display = "none"
-        popularReviews.style.display = "none"
-        friendReviews.style.display = "none"
-    }
-}
-
-
 const hideElements = function(mutationsList, observer) {
     viewed = hasBeenSeen()
     if(viewed){
