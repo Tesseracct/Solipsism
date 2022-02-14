@@ -74,25 +74,32 @@ function hasBeenSeen(){
 
 
 function hideOrListenFriends(){
-    const friends = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch").item(0)
-    const friendReviews = document.getElementById("popular-reviews-with-friends")
+    const friends = getFriendActivitySection()
 
     if(friends !== null){
         friends.style.display = "none"
-        friendReviews.style.display = "none"
         column.style.display = "block"
     }
     else { // Just in case friends hasn't loaded yet
         const columnObserver = new MutationObserver((e, a) => {
-            const friends = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch").item(0)
+            const friends = getFriendActivitySection()
             if(friends !== null){
                 friends.style.display = "none"
-                friendReviews.style.display = "none"
                 column.style.display = "block"
                 columnObserver.disconnect()
             }
         })
         columnObserver.observe(targetNode, config)
+    }
+}
+
+
+function fHideReviews() {
+    if(hideReviews){
+        recentReviews.style.display = "none"
+        popularReviews.style.display = "none"
+        friendReviews.style.display = "none"
+        reviews.style.display = "block"
     }
 }
 
@@ -118,12 +125,19 @@ const hideElements = function(mutationsList, observer) {
 
 
 const listenReviews = function(mutationsList, observer) {
-    if(recentReviews === null) {recentReviews  = document.getElementById("recent-reviews")}
-    if(popularReviews === null) {popularReviews = document.getElementById("popular-reviews")}
-    if(friendReviews === null) {friendReviews = document.getElementById("popular-reviews-with-friends")}
+    if(recentReviews === null) {recentReviews  = document.getElementById("recent-reviews").getElementsByClassName("film-popular-review").item(0)}
+    if(popularReviews === null) {popularReviews = document.getElementById("popular-reviews").getElementsByClassName("film-popular-review").item(0)}
+    if(friendReviews === null) {friendReviews = document.getElementById("popular-reviews-with-friends").getElementsByClassName("film-popular-review").item(0)}
     if(recentReviews !== null && popularReviews !== null && friendReviews !== null) {
         observer.disconnect()
+        fHideReviews()
     }
+}
+
+function toggleAllReviews(styleCommand) {
+    recentReviews.style.display = styleCommand
+    popularReviews.style.display = styleCommand
+    friendReviews.style.display = styleCommand
 }
 
 
@@ -144,6 +158,16 @@ async function listenWatchedEvent() {
     watchButtonObserver.observe(targetNode,config)
 }
 
+function getFriendActivitySection(){
+    const friendSection = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
+        .item(0)
+    if (friendSection !== null) {
+        return friendSection
+    } else {
+        return document.getElementsByClassName("section activity-from-friends -clear -friends-watched -friends-want-to-watch")
+            .item(0)
+    }
+}
 
 const updateContent = function(message) {
     if(!viewed){
@@ -152,12 +176,13 @@ const updateContent = function(message) {
                 active = false
                 document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "block"
                 if(hideReviews){
-                    reviews.style.display = "block"
+                    // reviews.style.display = "block"
+                    toggleAllReviews("block")
                 }
                 if(hideFriends){
-                    document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
-                        .item(0).style.display = "block"
-                    document.getElementById("popular-reviews-with-friends").style.display = "block"
+                    getFriendActivitySection().style.display = "block"
+                    // document.getElementById("popular-reviews-with-friends").style.display = "block"
+                    friendReviews.style.display = "block"
                 }
                 break
 
@@ -165,42 +190,44 @@ const updateContent = function(message) {
                 active = true
                 document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "none"
                 if(hideReviews){
-                    reviews.style.display = "none"
+                    // reviews.style.display = "none"
+                    toggleAllReviews("none")
                 }
                 if(hideFriends){
-                    document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
-                        .item(0).style.display = "none"
-                    document.getElementById("popular-reviews-with-friends").style.display = "none"
+                    getFriendActivitySection().style.display = "none"
+                    // document.getElementById("popular-reviews-with-friends").style.display = "none"
+                    friendReviews.style.display = "none"
                 }
                 break
 
             case "showReviews":
                 hideReviews = false
-                reviews.style.display = "block"
+                // reviews.style.display = "block"
+                toggleAllReviews("block")
+
                 break
 
             case "hideReviews":
                 hideReviews = true
                 if(active){
-                    reviews.style.display = "none"
+                    // reviews.style.display = "none"
+                    toggleAllReviews("none")
                 }
                 break
 
             case "showFriends":
                 hideFriends = false
-                document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
-                    .item(0).style.display = "block"
-                document.getElementById("popular-reviews-with-friends").style.display = "block"
+                getFriendActivitySection().style.display = "block"
+                // document.getElementById("popular-reviews-with-friends").style.display = "block"
+                friendReviews.style.display = "block"
                 break
 
             case "hideFriends":
                 hideFriends = true
                 if(active){
-                    const activityFriends = document.getElementsByClassName("section activity-from-friends -clear -friends-watched -no-friends-want-to-watch")
-                        .item(0)
-                    console.log(activityFriends)
-                    activityFriends.style.display = "none"
-                    document.getElementById("popular-reviews-with-friends").style.display = "none"
+                    getFriendActivitySection().style.display = "none"
+                    // document.getElementById("popular-reviews-with-friends").style.display = "none"
+                    friendReviews.style.display = "none"
                 }
         }
     }
