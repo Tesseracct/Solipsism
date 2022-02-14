@@ -1,6 +1,5 @@
 const sideBar = document.getElementsByClassName("sidebar").item(0)
 const reviews = document.getElementsByClassName("film-recent-reviews").item(0)
-// const reviews = document.getElementsByClassName("film-popular-review").item(0)
 const column = document.getElementsByClassName("col-17").item(0)
 
 column.style.display = "none"
@@ -176,12 +175,10 @@ const updateContent = function(message) {
                 active = false
                 document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "block"
                 if(hideReviews){
-                    // reviews.style.display = "block"
                     toggleAllReviews("block")
                 }
                 if(hideFriends){
                     getFriendActivitySection().style.display = "block"
-                    // document.getElementById("popular-reviews-with-friends").style.display = "block"
                     friendReviews.style.display = "block"
                 }
                 break
@@ -190,19 +187,16 @@ const updateContent = function(message) {
                 active = true
                 document.getElementsByClassName("section ratings-histogram-chart").item(0).style.display = "none"
                 if(hideReviews){
-                    // reviews.style.display = "none"
                     toggleAllReviews("none")
                 }
                 if(hideFriends){
                     getFriendActivitySection().style.display = "none"
-                    // document.getElementById("popular-reviews-with-friends").style.display = "none"
                     friendReviews.style.display = "none"
                 }
                 break
 
             case "showReviews":
                 hideReviews = false
-                // reviews.style.display = "block"
                 toggleAllReviews("block")
 
                 break
@@ -210,7 +204,6 @@ const updateContent = function(message) {
             case "hideReviews":
                 hideReviews = true
                 if(active){
-                    // reviews.style.display = "none"
                     toggleAllReviews("none")
                 }
                 break
@@ -218,7 +211,6 @@ const updateContent = function(message) {
             case "showFriends":
                 hideFriends = false
                 getFriendActivitySection().style.display = "block"
-                // document.getElementById("popular-reviews-with-friends").style.display = "block"
                 friendReviews.style.display = "block"
                 break
 
@@ -226,7 +218,6 @@ const updateContent = function(message) {
                 hideFriends = true
                 if(active){
                     getFriendActivitySection().style.display = "none"
-                    // document.getElementById("popular-reviews-with-friends").style.display = "none"
                     friendReviews.style.display = "none"
                 }
         }
