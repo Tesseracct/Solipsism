@@ -29,25 +29,26 @@ async function checkActivated() {
         if(chart !== null){
             chart.style.display = "block"
         }
+        readSettings()
     }
     else {
-        checkSettings()
+        await readSettings()
+
+        if(!hideReviews){
+            reviews.style.display = "block"
+        }
+        if(!hideFriends){
+            column.style.display = "block"
+        }
     }
 }
 
 
-async function checkSettings() {
+async function readSettings() {
     let temp = await browser.storage.local.get("hideReviews")
     hideReviews = temp.hideReviews
     temp = await browser.storage.local.get("hideFriends")
     hideFriends = temp.hideFriends
-
-    if(!hideReviews){
-        reviews.style.display = "block"
-    }
-    if(!hideFriends){
-         column.style.display = "block"
-    }
 }
 
 
@@ -98,7 +99,6 @@ function fHideReviews() {
         recentReviews.style.display = "none"
         popularReviews.style.display = "none"
         friendReviews.style.display = "none"
-        reviews.style.display = "block"
     }
 }
 
@@ -129,7 +129,11 @@ const listenReviews = function(mutationsList, observer) {
     if(friendReviews === null) {friendReviews = document.getElementById("popular-reviews-with-friends").getElementsByClassName("film-popular-review").item(0)}
     if(recentReviews !== null && popularReviews !== null && friendReviews !== null) {
         observer.disconnect()
-        fHideReviews()
+        if (active && hideReviews) {
+            toggleAllReviews("none")
+        }
+        // fHideReviews()
+        reviews.style.display = "block"
     }
 }
 
@@ -139,6 +143,10 @@ function toggleAllReviews(styleCommand) {
     friendReviews.style.display = styleCommand
 }
 
+function toggleFriends(styleCommand) {
+    getFriendActivitySection().style.display = styleCommand
+    friendReviews.style.display = styleCommand
+}
 
 async function listenWatchedEvent() {
     const targetNode = document.getElementsByClassName("action-large -watch").item(0)
@@ -178,8 +186,7 @@ const updateContent = function(message) {
                     toggleAllReviews("block")
                 }
                 if(hideFriends){
-                    getFriendActivitySection().style.display = "block"
-                    friendReviews.style.display = "block"
+                    toggleFriends("block")
                 }
                 break
 
@@ -190,15 +197,17 @@ const updateContent = function(message) {
                     toggleAllReviews("none")
                 }
                 if(hideFriends){
-                    getFriendActivitySection().style.display = "none"
-                    friendReviews.style.display = "none"
+                    toggleFriends("none")
                 }
                 break
 
             case "showReviews":
                 hideReviews = false
-                toggleAllReviews("block")
-
+                recentReviews.style.display = "block"
+                popularReviews.style.display = "block"
+                if (!hideFriends){
+                    friendReviews.style.display = "block"
+                }
                 break
 
             case "hideReviews":
@@ -211,14 +220,15 @@ const updateContent = function(message) {
             case "showFriends":
                 hideFriends = false
                 getFriendActivitySection().style.display = "block"
-                friendReviews.style.display = "block"
+                if (!hideReviews){
+                    friendReviews.style.display = "block"
+                }
                 break
 
             case "hideFriends":
                 hideFriends = true
                 if(active){
-                    getFriendActivitySection().style.display = "none"
-                    friendReviews.style.display = "none"
+                    toggleFriends("none")
                 }
         }
     }
