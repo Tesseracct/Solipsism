@@ -1,3 +1,9 @@
+const COLOUR_VALUE_RING_IS_DISABLED = "#808080"
+const COLOUR_VALUE_RING_IS_ENABLED = "#40BCF4"
+const COLOUR_VALUE_LINE_IS_DISABLED = "#FF8000"
+const COLOUR_VALUE_LINE_IS_ENABLED = "#00E054"
+
+
 async function switch_on_off_storage() {
     let temp = await browser.storage.local.get("activated")
     const active = temp.activated
@@ -102,12 +108,12 @@ function swtch() {
     switch(buttonTitle){
         case "Disable Add-On":
             // Add-On is being disabled
-            colourValue = "#808080"
+            colourValue = COLOUR_VALUE_RING_IS_DISABLED
             enableDisableButton.title = "Enable Add-On"
             break
         case "Enable Add-On":
             // Add-On is being enabled
-            colourValue = "#40BCF4"
+            colourValue = COLOUR_VALUE_RING_IS_ENABLED
             enableDisableButton.title = "Disable Add-On"
             break
         default:
@@ -126,10 +132,10 @@ function swtch() {
 
     switch(buttonTitle){
         case "Disable Add-On":
-            colourValue = "#FF8000"
+            colourValue = COLOUR_VALUE_LINE_IS_DISABLED
             break
         case "Enable Add-On":
-            colourValue = "#00E054"
+            colourValue = COLOUR_VALUE_LINE_IS_ENABLED
             break
         default:
             console.log("Unknown Colour Value")
